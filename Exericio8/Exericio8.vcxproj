@@ -89,12 +89,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../Common/include;../../dependencies/glfw-3.3.4.bin.WIN32/include;../../dependencies/GLAD/include;../../dependencies/glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../commons/include;../dependencies/glfw-3.3.4.bin.WIN32/include;../dependencies/GLAD/include;../dependencies/glm</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../dependencies/glfw-3.3.4.bin.WIN32/lib-vc2019</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../dependencies/glfw-3.3.4.bin.WIN32/lib-vc2019</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <PerUserRedirection>true</PerUserRedirection>
     </Link>
@@ -144,15 +144,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Common\src\Bezier.cpp" />
-    <ClCompile Include="..\..\Common\src\Curve.cpp" />
-    <ClCompile Include="..\..\Common\src\Shader.cpp" />
-    <ClCompile Include="..\..\Common\src\stb_image.cpp" />
+    <ClCompile Include="..\commons\src\Bezier.cpp" />
+    <ClCompile Include="..\commons\src\Curve.cpp" />
+    <ClCompile Include="..\commons\src\Hermite.cpp" />
+    <ClCompile Include="..\commons\src\Shader.cpp" />
+    <ClCompile Include="..\commons\src\stb_image.cpp" />
     <ClCompile Include="..\glad.c" />
     <ClCompile Include="Origem.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Common\include\Shader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

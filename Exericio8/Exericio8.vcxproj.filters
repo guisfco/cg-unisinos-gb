@@ -21,22 +21,20 @@
     <ClCompile Include="..\glad.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\src\stb_image.cpp">
+    <ClCompile Include="..\commons\src\Bezier.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\src\Shader.cpp">
+    <ClCompile Include="..\commons\src\Curve.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\src\Bezier.cpp">
+    <ClCompile Include="..\commons\src\Hermite.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\src\Curve.cpp">
+    <ClCompile Include="..\commons\src\Shader.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Common\include\Shader.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
-    </ClInclude>
+    <ClCompile Include="..\commons\src\stb_image.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

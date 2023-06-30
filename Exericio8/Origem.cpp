@@ -25,17 +25,18 @@ const GLuint WIDTH = 1000, HEIGHT = 1000;
 
 bool rotateX = false, rotateY = false, rotateZ = false, firstMouse = true;
 float lastX, lastY, sensitivity = 0.05, pitch = 0.0, yaw = -90.0;
+vector<int> movingObjects;
 
 string curvesFile = "../curves.txt";
 
 string suzanneObj = "../models/SuzanneTriTextured.obj", suzanneMtl = "../materials/SuzanneTriTextured.mtl";
-int suzanneVerticesSize = 0;
+int suzanneVerticesSize = 0, SUZANNE_MOVE_KEY = GLFW_KEY_1;
 
 string cubeObj = "../models/cube.obj", cubeMtl = "../materials/cube.mtl";
-int cubeVerticesSize = 0;
+int cubeVerticesSize = 0, CUBE_MOVE_KEY = GLFW_KEY_2;
 
 string ballObj = "../models/bola.obj", ballMtl = "../materials/bola.mtl";
-int ballVerticesSize = 0;
+int ballVerticesSize = 0, BALL_MOVE_KEY = GLFW_KEY_3;
 
 glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 3.0);
 glm::vec3 cameraFront = glm::vec3(0.0, 0.0, -1.0);
@@ -50,6 +51,8 @@ int loadTexture(string path);
 vector<float> parseObjToVertices(const string& filename);
 void readMaterialsFile(string filename, map<string, string>& properties);
 float stofOrElse(string value, float def);
+void moveModel(glm::mat4& model, glm::vec3 coord);
+bool isMoving(int objectId);
 
 struct Vertex {
 	float x, y, z, r = 0.4f, g = 0.1f, b = 0.4f;
@@ -68,8 +71,6 @@ struct Face {
 	Texture textures[3];
 	Normal normals[3];
 };
-
-
 
 int main()
 {
@@ -156,33 +157,13 @@ int main()
 		glLineWidth(10);
 		glPointSize(20);
 
-		float angle = (GLfloat)glfwGetTime();
-
 		model = glm::mat4(1);
-
-		model = glm::translate(model, bezier.getPointOnCurve(i));
-
-		if (rotateX)
-		{
-			model = glm::rotate(model, angle, glm::vec3(1.0f, 0.0f, 0.0f));
-
-		}
-		else if (rotateY)
-		{
-			model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
-
-		}
-		else if (rotateZ)
-		{
-			model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
-		}
 
 		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		shader.setMat4("view", glm::value_ptr(view));
 
 		shader.setVec3("cameraPos", cameraPos.x, cameraPos.y, cameraPos.z);
 
-		model = glm::scale(model, glm::vec3(0.5, 0.5, 0.5));
 		shader.setMat4("model", glm::value_ptr(model));
 
 		// suzanne
@@ -190,6 +171,15 @@ int main()
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texSuz);
+
+		model = glm::scale(model, glm::vec3(1.0, 1.0, 1.0));
+
+		if (isMoving(SUZANNE_MOVE_KEY))
+		{
+			moveModel(model, bezier.getPointOnCurve(i));
+		}
+
+		shader.setMat4("model", glm::value_ptr(model));
 
 		shader.setFloat("ka", stofOrElse(propertiesSuzanne["Ka"], 0));
 		shader.setFloat("kd", stofOrElse(propertiesSuzanne["Kd"], 1.5));
@@ -208,6 +198,11 @@ int main()
 		model = glm::translate(model, glm::vec3(-2.0, 0.0, 0.0));
 		model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
+		if (isMoving(CUBE_MOVE_KEY))
+		{
+			moveModel(model, bezier.getPointOnCurve(i));
+		}
+
 		shader.setMat4("model", glm::value_ptr(model));
 
 		shader.setFloat("ka", stofOrElse(propertiesCube["Ka"], 0));
@@ -225,6 +220,11 @@ int main()
 
 		model = glm::mat4(1);
 		model = glm::translate(model, glm::vec3(2.5, 0.0, 0.0));
+
+		if (isMoving(BALL_MOVE_KEY))
+		{
+			moveModel(model, bezier.getPointOnCurve(i));
+		}
 
 		shader.setMat4("model", glm::value_ptr(model));
 
@@ -298,6 +298,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_D && action == GLFW_REPEAT)
 	{
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+
+	if ((key >= GLFW_KEY_0 && key <= GLFW_KEY_9) && action == GLFW_PRESS) {
+		if (isMoving(key)) {
+			movingObjects.erase(remove(movingObjects.begin(), movingObjects.end(), key), movingObjects.end());
+		} else {
+			movingObjects.push_back(key);
+		}
 	}
 }
 
@@ -594,5 +602,27 @@ float stofOrElse(string value, float def) {
 	return stof(value);
 }
 
+void moveModel(glm::mat4& model, glm::vec3 coord) {
+	float angle = (GLfloat)glfwGetTime();
 
+	model = glm::translate(model, coord);
 
+	if (rotateX)
+	{
+		model = glm::rotate(model, angle, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	}
+	else if (rotateY)
+	{
+		model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	}
+	else if (rotateZ)
+	{
+		model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+}
+
+bool isMoving(int objectId) {
+	return find(movingObjects.begin(), movingObjects.end(), objectId) != movingObjects.end();
+}
